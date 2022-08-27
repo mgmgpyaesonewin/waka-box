@@ -1529,38 +1529,19 @@ module.exports = (function(e, t) {
   },
   215: function(e) {
     e.exports = {
-      _args: [["@octokit/rest@16.36.0", "/Users/matan/dev/waka-box"]],
-      _from: "@octokit/rest@16.36.0",
-      _id: "@octokit/rest@16.36.0",
-      _inBundle: false,
-      _integrity:
-        "sha512-zoZj7Ya4vWBK4fjTwK2Cnmu7XBB1p9ygSvTk2TthN6DVJXM4hQZQoAiknWFLJWSTix4dnA3vuHtjPZbExYoCZA==",
-      _location: "/@octokit/rest",
-      _phantomChildren: {},
-      _requested: {
-        type: "version",
-        registry: true,
-        raw: "@octokit/rest@16.36.0",
-        name: "@octokit/rest",
-        escapedName: "@octokit%2frest",
-        scope: "@octokit",
-        rawSpec: "16.36.0",
-        saveSpec: null,
-        fetchSpec: "16.36.0"
-      },
-      _requiredBy: ["/"],
-      _resolved: "https://registry.npmjs.org/@octokit/rest/-/rest-16.36.0.tgz",
-      _spec: "16.36.0",
-      _where: "/Users/matan/dev/waka-box",
-      author: { name: "Gregor Martynus", url: "https://github.com/gr2m" },
-      bugs: { url: "https://github.com/octokit/rest.js/issues" },
-      bundlesize: [{ path: "./dist/octokit-rest.min.js.gz", maxSize: "33 kB" }],
+      name: "@octokit/rest",
+      version: "16.36.0",
+      publishConfig: { access: "public" },
+      description: "GitHub REST API client for Node.js",
+      keywords: ["octokit", "github", "rest", "api-client"],
+      author: "Gregor Martynus (https://github.com/gr2m)",
       contributors: [
         { name: "Mike de Boer", email: "info@mikedeboer.nl" },
         { name: "Fabian Jakobs", email: "fabian@c9.io" },
         { name: "Joe Gallo", email: "joe@brassafrax.com" },
         { name: "Gregor Martynus", url: "https://github.com/gr2m" }
       ],
+      repository: "https://github.com/octokit/rest.js",
       dependencies: {
         "@octokit/request": "^5.2.0",
         "@octokit/request-error": "^1.0.2",
@@ -1575,7 +1556,6 @@ module.exports = (function(e, t) {
         once: "^1.4.0",
         "universal-user-agent": "^4.0.0"
       },
-      description: "GitHub REST API client for Node.js",
       devDependencies: {
         "@gimenete/type-writer": "^0.1.3",
         "@octokit/fixtures-server": "^5.0.6",
@@ -1609,13 +1589,41 @@ module.exports = (function(e, t) {
         "webpack-bundle-analyzer": "^3.0.0",
         "webpack-cli": "^3.0.0"
       },
-      files: ["index.js", "index.d.ts", "lib", "plugins"],
-      homepage: "https://github.com/octokit/rest.js#readme",
-      keywords: ["octokit", "github", "rest", "api-client"],
+      types: "index.d.ts",
+      scripts: {
+        coverage: "nyc report --reporter=html && open coverage/index.html",
+        lint:
+          "prettier --check '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json",
+        "lint:fix":
+          "prettier --write '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json",
+        pretest: "npm run -s lint",
+        test: 'nyc mocha test/mocha-node-setup.js "test/*/**/*-test.js"',
+        "test:browser": "cypress run --browser chrome",
+        build: "npm-run-all build:*",
+        "build:ts": "npm run -s update-endpoints:typescript",
+        "prebuild:browser": "mkdirp dist/",
+        "build:browser": "npm-run-all build:browser:*",
+        "build:browser:development":
+          "webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json",
+        "build:browser:production":
+          "webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map",
+        "generate-bundle-report":
+          "webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html",
+        "update-endpoints": "npm-run-all update-endpoints:*",
+        "update-endpoints:fetch-json":
+          "node scripts/update-endpoints/fetch-json",
+        "update-endpoints:code": "node scripts/update-endpoints/code",
+        "update-endpoints:typescript":
+          "node scripts/update-endpoints/typescript",
+        "prevalidate:ts": "npm run -s build:ts",
+        "validate:ts": "tsc --target es6 --noImplicitAny index.d.ts",
+        "postvalidate:ts":
+          "tsc --noEmit --target es6 test/typescript-validate.ts",
+        "start-fixtures-server": "octokit-fixtures-server"
+      },
       license: "MIT",
-      name: "@octokit/rest",
+      files: ["index.js", "index.d.ts", "lib", "plugins"],
       nyc: { ignore: ["test"] },
-      publishConfig: { access: "public" },
       release: {
         publish: [
           "@semantic-release/npm",
@@ -1625,43 +1633,7 @@ module.exports = (function(e, t) {
           }
         ]
       },
-      repository: {
-        type: "git",
-        url: "git+https://github.com/octokit/rest.js.git"
-      },
-      scripts: {
-        build: "npm-run-all build:*",
-        "build:browser": "npm-run-all build:browser:*",
-        "build:browser:development":
-          "webpack --mode development --entry . --output-library=Octokit --output=./dist/octokit-rest.js --profile --json > dist/bundle-stats.json",
-        "build:browser:production":
-          "webpack --mode production --entry . --plugin=compression-webpack-plugin --output-library=Octokit --output-path=./dist --output-filename=octokit-rest.min.js --devtool source-map",
-        "build:ts": "npm run -s update-endpoints:typescript",
-        coverage: "nyc report --reporter=html && open coverage/index.html",
-        "generate-bundle-report":
-          "webpack-bundle-analyzer dist/bundle-stats.json --mode=static --no-open --report dist/bundle-report.html",
-        lint:
-          "prettier --check '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json",
-        "lint:fix":
-          "prettier --write '{lib,plugins,scripts,test}/**/*.{js,json,ts}' 'docs/*.{js,json}' 'docs/src/**/*' index.js README.md package.json",
-        "postvalidate:ts":
-          "tsc --noEmit --target es6 test/typescript-validate.ts",
-        "prebuild:browser": "mkdirp dist/",
-        pretest: "npm run -s lint",
-        "prevalidate:ts": "npm run -s build:ts",
-        "start-fixtures-server": "octokit-fixtures-server",
-        test: 'nyc mocha test/mocha-node-setup.js "test/*/**/*-test.js"',
-        "test:browser": "cypress run --browser chrome",
-        "update-endpoints": "npm-run-all update-endpoints:*",
-        "update-endpoints:code": "node scripts/update-endpoints/code",
-        "update-endpoints:fetch-json":
-          "node scripts/update-endpoints/fetch-json",
-        "update-endpoints:typescript":
-          "node scripts/update-endpoints/typescript",
-        "validate:ts": "tsc --target es6 --noImplicitAny index.d.ts"
-      },
-      types: "index.d.ts",
-      version: "16.36.0"
+      bundlesize: [{ path: "./dist/octokit-rest.min.js.gz", maxSize: "33 kB" }]
     };
   },
   219: function(e, t, r) {
@@ -3678,34 +3650,29 @@ module.exports = (function(e, t) {
   },
   361: function(e) {
     e.exports = {
-      _args: [["axios@0.19.0", "/Users/matan/dev/waka-box"]],
-      _from: "axios@0.19.0",
-      _id: "axios@0.19.0",
-      _inBundle: false,
-      _integrity:
-        "sha512-1uvKqKQta3KBxIz14F2v06AEHZ/dIoeKfbTRkK1E5oqjDnuEerLmYTgJB5AiQZHJcljpg1TuRzdjDR06qNk0DQ==",
-      _location: "/axios",
-      _phantomChildren: {},
-      _requested: {
-        type: "version",
-        registry: true,
-        raw: "axios@0.19.0",
-        name: "axios",
-        escapedName: "axios",
-        rawSpec: "0.19.0",
-        saveSpec: null,
-        fetchSpec: "0.19.0"
-      },
-      _requiredBy: ["/"],
-      _resolved: "https://registry.npmjs.org/axios/-/axios-0.19.0.tgz",
-      _spec: "0.19.0",
-      _where: "/Users/matan/dev/waka-box",
-      author: { name: "Matt Zabriskie" },
-      browser: { "./lib/adapters/http.js": "./lib/adapters/xhr.js" },
-      bugs: { url: "https://github.com/axios/axios/issues" },
-      bundlesize: [{ path: "./dist/axios.min.js", threshold: "5kB" }],
-      dependencies: { "follow-redirects": "1.5.10", "is-buffer": "^2.0.2" },
+      name: "axios",
+      version: "0.19.0",
       description: "Promise based HTTP client for the browser and node.js",
+      main: "index.js",
+      scripts: {
+        test: "grunt test && bundlesize",
+        start: "node ./sandbox/server.js",
+        build: "NODE_ENV=production grunt build",
+        preversion: "npm test",
+        version:
+          "npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json",
+        postversion: "git push && git push --tags",
+        examples: "node ./examples/server.js",
+        coveralls:
+          "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+        fix: "eslint --fix lib/**/*.js"
+      },
+      repository: { type: "git", url: "https://github.com/axios/axios.git" },
+      keywords: ["xhr", "http", "ajax", "promise", "node"],
+      author: "Matt Zabriskie",
+      license: "MIT",
+      bugs: { url: "https://github.com/axios/axios/issues" },
+      homepage: "https://github.com/axios/axios",
       devDependencies: {
         bundlesize: "^0.17.0",
         coveralls: "^3.0.0",
@@ -3743,30 +3710,10 @@ module.exports = (function(e, t) {
         webpack: "^1.13.1",
         "webpack-dev-server": "^1.14.1"
       },
-      homepage: "https://github.com/axios/axios",
-      keywords: ["xhr", "http", "ajax", "promise", "node"],
-      license: "MIT",
-      main: "index.js",
-      name: "axios",
-      repository: {
-        type: "git",
-        url: "git+https://github.com/axios/axios.git"
-      },
-      scripts: {
-        build: "NODE_ENV=production grunt build",
-        coveralls:
-          "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-        examples: "node ./examples/server.js",
-        fix: "eslint --fix lib/**/*.js",
-        postversion: "git push && git push --tags",
-        preversion: "npm test",
-        start: "node ./sandbox/server.js",
-        test: "grunt test && bundlesize",
-        version:
-          "npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"
-      },
+      browser: { "./lib/adapters/http.js": "./lib/adapters/xhr.js" },
       typings: "./index.d.ts",
-      version: "0.19.0"
+      dependencies: { "follow-redirects": "1.5.10", "is-buffer": "^2.0.2" },
+      bundlesize: [{ path: "./dist/axios.min.js", threshold: "5kB" }]
     };
   },
   363: function(e) {
